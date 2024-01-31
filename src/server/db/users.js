@@ -1,17 +1,19 @@
-const db = require('./client')
-const bcrypt = require('bcrypt');
+// db calls that i probably want in my api
+
+const client = require("./client")
+const bcrypt = require("bcrypt");
 const SALT_COUNT = 10;
 
 
 // function that lets us insert a new row into the users table
-const createUser = async({ name='first last', email, password }) => {
+const createUser = async({ name='first last', email, password, role }) => {
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
   try {
-      const { rows: [user ] } = await db.query(`
-      INSERT INTO users(name, email, password)
-      VALUES($1, $2, $3)
+      const { rows: [user ], } = await client.query(`
+      INSERT INTO users(name, email, password, role)
+      VALUES($1, $2, $3, $4)
       ON CONFLICT (email) DO NOTHING
-      RETURNING *`, [name, email, hashedPassword]);
+      RETURNING *`, [name, email, hashedPassword, role]);
 
       return user;
   } catch (err) {
@@ -19,7 +21,7 @@ const createUser = async({ name='first last', email, password }) => {
   }
 }
 
-// function that allows us to get a spceic user out of the table if provided with a valid email/password combination
+// function that allows us to get a specific user out of the table if provided with a valid email/password combination
 const getUser = async({email, password}) => {
   if(!email || !password) {
       return;
@@ -37,20 +39,61 @@ const getUser = async({email, password}) => {
   }
 }
 
-// function that allows us to look up a user by email
-const getUserByEmail = async(email) => {
+const getAllUsers = async () => {
   try {
-      const { rows: [ user ] } = await db.query(`
-      SELECT * 
-      FROM users
-      WHERE email=$1;`, [ email ]);
+    const userData = await client.query(
+      `SELECT id, name, email, role
+       FROM users`
+    );
 
-      if(!user) {
-          return;
-      }
-      return user;
+    return userData.rows;
   } catch (err) {
-      throw err;
+    console.error("Unable to get users: ", err.message);
+    throw err;
+  }
+};
+
+// function that allows us to look up a user by email
+const getUserByEmail = async (email) => {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+        SELECT * 
+        FROM users
+        WHERE email=$1;`,
+      [email]
+    );
+
+    if (!user) {
+      return;
+    }
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+async function getUserById(id) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT id, name, email, role
+      FROM users
+      WHERE id=${id};`
+    );
+
+    if (!user) {
+      return;
+    }
+
+    // return the user without their password
+    return user;
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -58,5 +101,7 @@ const getUserByEmail = async(email) => {
 module.exports = {
   createUser,
   getUser,
-  getUserByEmail
+  getAllUsers,
+  getUserByEmail,
+  getUserById,
 };

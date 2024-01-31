@@ -1,49 +1,52 @@
 // load necessary modules
-const express = require('express');
+const express = require("express");
+
+// creating a router
 const apiRouter = express.Router();
-const jwt = require('jsonwebtoken');
+
+const jwt = require("jsonwebtoken");
 
 const volleyball = require('volleyball');
 apiRouter.use(volleyball);
 
-// use middleware function on all incoming requests to check the reques5 header for a valid token
-// set `req.user` if possible, using token sent in the request header
+// use middleware function on all incoming requests to check the request header for a valid token
 apiRouter.use(async (req, res, next) => {
-  const prefix = 'Bearer ';
-  const auth = req.header('Authorization');
-  
-  if (!auth) { 
+  const auth = req.header("Authorization");
+  if (!auth) {
     next();
-  } 
-  else if (auth.startsWith(prefix)) {
-    const token = auth.slice(prefix.length);
-    
+  } else if (auth?.startsWith("Bearer ")) {
     try {
-      const parsedToken = jwt.verify(token, JWT_SECRET);
-      const id = parsedToken && parsedToken.id
-      if (id) {
-        req.user = await getUserById(id);
+      const token = auth.slice(7);
+      if (token === "null") {
+        next();
+      } else {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decodedToken;
         next();
       }
     } catch (error) {
       next(error);
     }
-  } 
-  else {
+  } else {
     next({
-      name: 'AuthorizationHeaderError',
-      message: `Authorization token must start with 'Bearer'`
+      name: "AuthorizationHeaderError",
+      message: `Authorization token must start with 'Bearer '`,
     });
   }
 });
 
+// API Routes
+const usersRouter = require("./users");
+const ticketsRouter = require("./tickets");
+
 // add any routes you/ve defined in other files
-const usersRouter = require('./users');
 apiRouter.use('/users', usersRouter);
+apiRouter.use('/tickets', ticketsRouter);
 
 // add the default error handler
 apiRouter.use((err, req, res, next) => {
   res.status(res.statusCode ? res.statusCode : 500).send(err);
 })
+
 
 module.exports = apiRouter;

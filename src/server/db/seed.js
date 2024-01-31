@@ -1,45 +1,17 @@
 // file where you will create your tables and insert initial values
 
-// establish a connection to the database
-const db = require('./client');
-const { createUser } = require('./users');
+// establish a connection to the database (grab client)
+const client = require('./client');
 
-// create an array of user objects
-const users = [
-  {
-    name: 'Emily Johnson',
-    email: 'emily@example.com',
-    password: 'securepass',
-  },
-  {
-    name: 'Liu Wei',
-    email: 'liu@example.com',
-    password: 'strongpass',
-  },
-  {
-    name: 'Isabella García',
-    email: 'bella@example.com',
-    password: 'pass1234',
-  },
-  {
-    name: 'Mohammed Ahmed',
-    email: 'mohammed@example.com',
-    password: 'mysecretpassword',
-  },
-  {
-    name: 'John Smith',
-    email: 'john@example.com',
-    password: 'password123',
-  },
-  // Add more user objects as needed
-];  
+const {users} = require('./data')
+
+const { createUser } = require('./users');
 
 // drop any existing tables
 const dropTables = async () => {
   try {
-      await db.query(`
-      DROP TABLE IF EXISTS users;
-      `);
+    await client.query(`DROP TABLE IF EXISTS tickets;`)
+    await client.query(`DROP TABLE IF EXISTS users;`)
   }
   catch(err) {
       throw err;
@@ -49,16 +21,25 @@ const dropTables = async () => {
 // create tables
 const createTables = async () => {
   try{
-      await db.query(`
+      await client.query(`
       CREATE TABLE users(
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) DEFAULT 'name',
           email VARCHAR(255) UNIQUE NOT NULL,
-          password VARCHAR(255) NOT NULL
+          password VARCHAR(255) NOT NULL,
+          role VARCHAR(255)
+      )`);
+      await client.query(`
+      CREATE TABLE tickets(
+          id SERIAL PRIMARY KEY,
+          userID INTEGER REFERENCES users(id),
+          content TEXT,
+          ticketStatus VARCHAR(255),
+          ticketDate DATE
       )`);
   }
   catch(err) {
-      throw err;
+    throw err;
   }
 }
 
@@ -66,30 +47,35 @@ const createTables = async () => {
 const insertUsers = async () => {
   try {
     for (const user of users) {
-      await createUser({name: user.name, email: user.email, password: user.password});
+      await createUser({name: user.name, email: user.email, password: user.password, role: user.role,});
     }
-    console.log('Seed data inserted successfully.');
+    console.log('Seed USER data inserted successfully.');
   } catch (error) {
-    console.error('Error inserting seed data:', error);
+    console.error('Error inserting USER seed data:', error);
   }
 };
 
 // call the different functions defined above and close the connection to the database when seeding is complete
-const seedDatabse = async () => {
+const runSeed = async () => {
   try {
-      db.connect();
+      // initialize connection to our database
+      client.connect();
+
       await dropTables();
+      console.log("dropped Tables...");
       await createTables();
+      console.log("Created Tables...");
       await insertUsers();
+      console.log("Inserted Users...")
   }
   catch (err) {
       throw err;
   }
   finally {
-      db.end();
+      client.end(); // shut down the connection to the db
   }
 }
 
-seedDatabse();
+runSeed();
 
 // use the seed file through the package.json

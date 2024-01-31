@@ -1,110 +1,74 @@
-import React, { useState } from 'react';
-
-const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLasttName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleFirstNameChange = (e) => {
-    setFirstName(e.target.value);
-  };
-
-  const handleLastNameChange = (e) => {
-    setLasttName(e.target.value);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const login = async() => {
+import { useState } from "react";
+let API = "http://localhost:3000/api/";
+function Register({ setToken }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState(null);
+  async function handleSubmit(event) {
+    event.preventDefault();
     try {
-        const response = await fetch('http://localhost:3000/api/users/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            }, 
-            body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                password
-            })
-        });
-        const result = await response.json();
-        setMessage(result.message);
-        if(!response.ok) {
-          throw(result)
-        }
-        setFirstName('');
-        setLasttName('');
-        setEmail('');
-        setPassword('');
-    } catch (err) {
-        console.error(`${err.name}: ${err.message}`);
+      let response = await fetch(`${API}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role: "USER",
+        }),
+      });
+      let json = await response.json();
+      setToken(json.token);
+      setSuccessMessage(json.message);
+      setName("");
+      setEmail("");
+      setPassword("");
+      // window.location.href= '/login' -> this automatically navigates to login page but I rather have a link so users can see the success message first
+    } catch (error) {
+      setError(error.message);
     }
   }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login();
-  };
-
   return (
-    <div>
-      <h2>Register</h2>
+    <div className="register-container">
+      {successMessage && <p>{successMessage}</p>}
+      {error && <p>{error}</p>}
+      <h1>Register</h1>
       <form onSubmit={handleSubmit}>
-      <div>
-          <label htmlFor='firstName'>First name:</label>
+        <div className="register-form">
+          <label>Name:</label>
           <input
-            type='text'
-            id='firstName'
-            value={firstName}
-            onChange={handleFirstNameChange}
-            required
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor='lastName'>Last name:</label>
+          <label>Email:</label>
           <input
-            type='text'
-            id='lastName'
-            value={lastName}
-            onChange={handleLastNameChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor='email'>Email:</label>
-          <input
-            type='email'
-            id='email'
+            type="email"
             value={email}
-            onChange={handleEmailChange}
-            required
+            onChange={(event) => setEmail(event.target.value)}
           />
-        </div>
-        <div>
-          <label htmlFor='password'>Password:</label>
+          <label>Password:</label>
           <input
-            type='password'
-            id='password'
+            type="password"
             value={password}
-            onChange={handlePasswordChange}
-            required
+            onChange={(event) => setPassword(event.target.value)}
           />
         </div>
-        <button type='submit'>Register</button>
+        <div className="register-options">
+          <button type="submit">Sign up</button>
+          {/* Link back to Login page with text/label depending on value (truthy or falsy) of successMessage */}
+          {successMessage ? (
+            <a href="/login">Return to login</a>
+          ) : (
+            <a href="/login">Already have an account?</a>
+          )}
+        </div>
       </form>
-      <p>{message}</p>
     </div>
   );
-};
-
+}
 export default Register;

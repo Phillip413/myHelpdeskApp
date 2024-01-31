@@ -1,7 +1,5 @@
-// file to export all of our database functions that may eventually be spread out across multiple files int he db directory
-
 module.exports = {
-  ...require('./users'),
-}
+  ...require("./users"),
+  ...require("./tickets"),
 
-// as you add new files with more database functions, we should add them here
+};
