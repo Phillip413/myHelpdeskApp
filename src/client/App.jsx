@@ -23,17 +23,17 @@ function App() {
 
   async function fetchUser() {
     try {
-      let response = await fetch(`${API}/users/info`, {
+      const response = await fetch(`${API}/users/info`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      let json = await response.json()
+      const json = await response.json()
       setUser(json);
 
-      console.log("user check: ", json.name)
+      console.log("user check: ", json)
 
     } catch (error) {
       setError(error.message);
@@ -56,20 +56,24 @@ function App() {
           <Link to="/login" className="nav-link">
             Login
           </Link>
-          <Link to="/ticketForm" className="nav-link">
-            Submit Ticket
-          </Link>
+
+          {token ? 
+            <Link to="/ticketForm" className="nav-link">
+              Submit Ticket
+            </Link> 
+          :
+            <></>  
+          }
+          
         </nav>
       </header>
       {/* {isAdmin() ? <AdminFooter token={token} user={user} /> : <></>} */}
 
       <Routes>
-        <Route path="/" element={<HomePage token={token} setToken={setToken}/>}/>
-        <Route path="/login" element={<Login token={token} setToken={setToken}/>}/>
-        <Route path="/ticketForm" element={<TicketForm token={token} user={user}/>}/>
-        <Route path="/register" element={<Register token={token} setToken={setToken} />}/>
-
-
+        <Route path="/ticketForm" element={<TicketForm token={token} setToken={setToken} user={user} setUser={setUser}/>}></Route>
+        <Route path="/" element={<HomePage token={token} setToken={setToken} user={user}/>}></Route>
+        <Route path="/login" element={<Login token={token} setToken={setToken} user={user}/>}></Route>
+        <Route path="/register" element={<Register token={token} setToken={setToken} user={user}/>}></Route>
       </Routes>
     </div>
   );

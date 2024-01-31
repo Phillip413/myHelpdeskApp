@@ -2,7 +2,6 @@ const express = require("express")
 const ticketRouter = express.Router();
 const { isLoggedIn } = require("./roles");
 
-
 const {
   getTicket,
   deleteTicketById,

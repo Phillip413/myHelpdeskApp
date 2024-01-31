@@ -1,22 +1,22 @@
 const client = require("./client");
 
-const createTicket = async ({ userid, content, ticketStatus, ticketDate }) => {
+const createTicket = async ({ userID, content, ticketStatus, ticketDate }) => {
   try {
     const {
       rows: [ticket],
     } = await client.query(
       `
-      INSERT INTO albums(userid, content, ticketstatus, ticketdate)
+      INSERT INTO tickets(userID, content, ticketStatus, ticketDate)
       VALUES($1, $2, $3, $4)
       RETURNING *
       `,
-      [userid, content, ticketStatus, ticketDate]
+      [userID, content, ticketStatus, ticketDate]
     );
 
     return ticket;
-  } catch (err) {
-    console.error("Unable to create ticket. ", err.message);
-    throw err;
+  } catch (error) {
+    console.error("Unable to create ticket. ", error.message);
+    throw error;
   }
 };
 
@@ -30,9 +30,9 @@ async function getAllTickets() {
       `
     );
     return rows;
-  } catch (err) {
-    console.error("Could not get all tickets: ", err.message);
-    throw err;
+  } catch (error) {
+    console.error("Could not get all tickets: ", error.message);
+    throw error;
   }
 }
 
@@ -43,8 +43,8 @@ async function getTicket(id) {
       rows: [ticket],
     } = await client.query("SELECT * FROM tickets WHERE id=$1", [id]);
     return ticket;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -55,37 +55,31 @@ async function deleteTicketById(id) {
       [id]
     );
     return rows;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
-async function updateTicket(id, updatedFields) {
+async function updateTicket(id, {ticketStatus}) {
   try {
     const { rows: updatedTicket } = await client.query(
       `
       UPDATE tickets
-      SET userid = $1, content = $2, ticketstatus = $3, ticketdate = $4
-      WHERE id = $5
+      SET ticketstatus = $3
+      WHERE id = $1
       RETURNING *
       `,
-      [
-        updatedFields.userid,
-        updatedFields.content,
-        updatedFields.ticketStatus,
-        updatedFields.ticketDate,
-        id,
-      ]
+      [id, ticketStatus]
     );
 
-    if (!updatedTicket || updatedTicket.length === 0) {
+    if (!updatedTicket) {
       throw new Error("Ticket not found");
     }
 
     return updatedTicket;
-  } catch (err) {
-    console.error("Unable to update ticket.", err.message);
-    throw err;
+  } catch (error) {
+    console.error("Unable to update ticket.", error.message);
+    throw error;
   }
 }
 

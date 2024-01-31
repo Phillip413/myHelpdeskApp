@@ -6,7 +6,7 @@ const apiRouter = express.Router();
 
 const jwt = require("jsonwebtoken");
 
-const volleyball = require('volleyball');
+const volleyball = require("volleyball");
 apiRouter.use(volleyball);
 
 // use middleware function on all incoming requests to check the request header for a valid token
@@ -38,14 +38,15 @@ apiRouter.use(async (req, res, next) => {
 // API Routes
 const usersRouter = require("./users");
 const ticketsRouter = require("./tickets");
+const id = require("volleyball/lib/id");
 
 // add any routes you/ve defined in other files
-apiRouter.use('/users', usersRouter);
-apiRouter.use('/tickets', ticketsRouter);
+apiRouter.use("/users", usersRouter);
+apiRouter.use("/tickets", ticketsRouter);
 
 // add the default error handler
 apiRouter.use((err, req, res, next) => {
-  res.status(res.statusCode ? res.statusCode : 500).send(err);
+  res.status(500).send(err);
 })
 
 

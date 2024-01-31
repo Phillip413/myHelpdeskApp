@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+
 
 let API = "http://localhost:3000/api/";
 
@@ -65,9 +66,9 @@ const Login = (props) => {
         <div className="login-options">
           <button type="submit">Login</button>
           {successMessage ? (
-            <a href="/ticketForm">Go to Ticket Form</a>
+            <Link to="/ticketForm">Go to Ticket Form</Link>
           ) : (
-            <a href="/register">Don't have an account?</a>
+            <Link to="/register">Don't have an account?</Link>
           )}
         </div>
       </form>

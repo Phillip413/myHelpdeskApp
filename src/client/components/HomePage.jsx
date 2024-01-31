@@ -1,14 +1,19 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-function HomePage({}){
+function HomePage(props){
 
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    console.log(props?.user);
+  }, []);
 
   return (
     <div>
       <h2>Welcome to the Help Center</h2>
       <p>Please Login to submit a ticket</p>
+
+
+
     </div>
   );
 
