@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 let API = "http://localhost:3000/api/";
@@ -6,20 +6,15 @@ let API = "http://localhost:3000/api/";
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState(null);
+  
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const login = async () => {
+  async function handleSubmit(event) {
+    event.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      let response = await fetch("http://localhost:3000/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,58 +24,53 @@ const Login = (props) => {
           password,
         }),
       });
-      const result = await response.json();
-      setMessage(result.message);
-      if (!response.ok) {
-        throw result;
-      }
+      let json = await response.json();
+      
+      setSuccessMessage(json.message);
+      console.log(json.message)
+      console.log(json)
       setEmail("");
       setPassword("");
-      props?.setToken(result.token);
-      navigate("/TicketForm");
-    } catch (err) {
-      console.error(`${err.name}: ${err.message}`);
-    }
-  };
+      props?.setToken(json.token);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login();
-  };
+    } catch (error) {
+      setError(error.message);
+    }
+  }
 
   return (
     <div className="login-container">
+      {successMessage && <p>{successMessage}</p>}
+      {/* {error && <p>{error}</p>} */}
+
+
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="login-form">
-          <div className="login-email">
-            <label htmlFor="email">Email: </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={handleEmailChange}
-              required
-            />
-          </div>
-          <div className="login-email">
-            <label htmlFor="password">Password: </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={handlePasswordChange}
-              required
-            />
-          </div>
+          <label>Email: </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <label>Password: </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
         </div>
         <div className="login-options">
           <button type="submit">Login</button>
-
-          <a href="/register">Don't have an account?</a>
+          {successMessage ? (
+            <a href="/ticketForm">Go to Ticket Form</a>
+          ) : (
+            <a href="/register">Don't have an account?</a>
+          )}
         </div>
       </form>
-      <p>{message}</p>
     </div>
   );
 };

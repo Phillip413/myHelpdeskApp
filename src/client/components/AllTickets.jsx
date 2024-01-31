@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Axios from "axios";
+import axios from "axios";
 
 function AllTickets({ tickets, setTickets }) {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ function AllTickets({ tickets, setTickets }) {
     let API = "http://localhost:3000/api/tickets";
 
     try {
-      const { data: response } = await Axios.get(`${API}`);
+      const { data: response } = await axios.get(`${API}`);
       setTickets(response);
       setOriginalTickets(response);
     } catch (err) {

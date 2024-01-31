@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 let API = "http://localhost:3000/api/";
 
-function AddAlbum(props) {
+function TicketForm(props) {
   const [formData, setFormData] = useState({
-    title: "",
-    artist: "",
-    genre: "",
-    releaseDate: "",
-    imgUrl: "",
+    userID: props.user.id,
+    name: props.user.name,
+    content: "",
+    ticketStatus: "",
+    ticketDate: "",
   });
+  
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -21,8 +22,8 @@ function AddAlbum(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    formData.releaseDate = new Date(formData.releaseDate).getFullYear();
-    const response = await axios.post(`${API}/albums`, formData, {
+    formData.ticketDate = new Date(formData.ticketDate).getFullYear();
+    const response = await axios.post(`${API}/tickets`, formData, {
       headers: {
         Authorization: `Bearer ${props?.token}`,
       },
@@ -34,58 +35,31 @@ function AddAlbum(props) {
   };
 
   return (
-    <form className="add-album-form" onSubmit={handleSubmit}>
-      <h2>Add an Album</h2>
+    <form className="add-ticket-form" onSubmit={handleSubmit}>
+      <h2>Submit a Ticket</h2>
       <label>
-        Title:
+        userID: {formData.name}
+      </label>
+
+      <br />
+
+      <label>
+        content
         <input
           type="text"
-          name="title"
-          value={formData.title}
+          name="content"
+          value={formData.content}
           onChange={handleInputChange}
         />
       </label>
       <br />
 
       <label>
-        Artist:
-        <input
-          type="text"
-          name="artist"
-          value={formData.artist}
-          onChange={handleInputChange}
-        />
-      </label>
-      <br />
-
-      <label>
-        Genre:
-        <input
-          type="text"
-          name="genre"
-          value={formData.genre}
-          onChange={handleInputChange}
-        />
-      </label>
-      <br />
-
-      <label>
-        Release Date:
+        Ticket Date:
         <input
           type="date"
-          name="releaseDate"
-          value={formData.releaseDate}
-          onChange={handleInputChange}
-        />
-      </label>
-      <br />
-
-      <label>
-        Image URL:
-        <input
-          type="text"
-          name="imgUrl"
-          value={formData.imgUrl}
+          name="ticketDate"
+          value={formData.ticketDate}
           onChange={handleInputChange}
         />
       </label>
@@ -96,4 +70,4 @@ function AddAlbum(props) {
   );
 }
 
-export default AddAlbum;
+export default TicketForm;

@@ -6,6 +6,7 @@ function Register({ setToken }) {
   const [password, setPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState(null);
+  
   async function handleSubmit(event) {
     event.preventDefault();
     try {
@@ -36,7 +37,7 @@ function Register({ setToken }) {
     <div className="register-container">
       {successMessage && <p>{successMessage}</p>}
       {error && <p>{error}</p>}
-      <h1>Register</h1>
+      <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <div className="register-form">
           <label>Name:</label>
