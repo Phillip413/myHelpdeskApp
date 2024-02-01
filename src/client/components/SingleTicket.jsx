@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 let API = "http://localhost:3000/api/";
 
 function SingleTicket(props) {
   const [ticket, setTicket] = useState({});
   const [user, setUser] = useState({});
+  const [updatedStatus, setUpdatedStatus] = useState("Not Yet Reviewed")
 
-  const navigate = useNavigate();
+
 
   const { id } = useParams();
 
   useEffect(() => {
     fetchSingleTicket();
     fetchUser();
-  }, []);
+  }, [props?.token]);
 
   async function fetchSingleTicket() {
     try {
@@ -43,6 +44,33 @@ function SingleTicket(props) {
     return user.role === "ADMIN";
   }
 
+  //
+  async function saveStatus() {
+    event.preventDefault()
+    try {
+      const response = await fetch(`${API}/tickets/${ticket.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${props?.token}`,
+        },
+        body: JSON.stringify({
+          ticketStatus: updatedStatus,
+        }),
+      });
+
+      const json = await response.json();
+      console.log("patch request response ",json)
+      fetchSingleTicket()
+
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+  //
+  
+  console.log("updated status: ",updatedStatus)
+
   return (
     <div className="single-ticket">
       <div className="single-ticket-flex">
@@ -54,17 +82,15 @@ function SingleTicket(props) {
           <p className="ticket-content">Issue: {ticket.content}</p>
         </div>
 
-        {/* <form onSubmit={changeStatus}>
-          <div>
-            <label>Change Status to: </label>
-            <input
-              type="text"
-              value={ticket.status}
-              onChange={(event) => setTicketStatus(event.target.value)}
-            />
-          </div>
-          <button type="submit">Change Status</button>
-        </form> */}
+        <form onSubmit={saveStatus} >
+          <label>Update Status: </label>
+          <select value={updatedStatus} onChange={event => setUpdatedStatus(event.target.value)}>
+            <option value="Not Yet Reviewed">Not Yet Reviewed</option>
+            <option value="In-Progress">In-progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <button type="submit">Save Changes</button>
+        </form>
 
       </div>
     </div>

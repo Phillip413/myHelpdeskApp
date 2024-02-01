@@ -39,6 +39,10 @@ const Login = (props) => {
     }
   }
 
+  function isAdmin() {
+    return props?.user?.role === "ADMIN";
+  }
+
   return (
     <div className="login-container">
       {successMessage && <p>{successMessage}</p>}
@@ -65,7 +69,7 @@ const Login = (props) => {
         </div>
         <div className="login-options">
           <button type="submit">Login</button>
-          {successMessage ? (
+          {successMessage && !isAdmin() ? (
             <Link to="/ticketForm">Go to Ticket Form</Link>
           ) : (
             <Link to="/register">Don't have an account?</Link>

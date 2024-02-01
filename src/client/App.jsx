@@ -62,7 +62,7 @@ function App() {
             Login
           </Link>
 
-          {token && !isAdmin ? 
+          {token && !isAdmin() ? 
             <Link to="/ticketForm" className="nav-link">
               Submit Ticket
             </Link> 
@@ -82,7 +82,7 @@ function App() {
 
         <Route path="/admin/tickets" element={<AllTickets token={token} user={user}/>}></Route>
         <Route path="/admin/users" element={<AllUsers token={token} user={user} />}></Route>
-        <Route path="/admin/tickets/:id" element={<SingleTicket token={token} />} />
+        <Route path="/admin/tickets/:id" element={<SingleTicket token={token} setToken={setToken} user={user} />} />
 
       </Routes>
     </div>

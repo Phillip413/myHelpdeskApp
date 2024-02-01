@@ -27,13 +27,13 @@ function AllTickets(props) {
 
   return (
     <div>
-      <div className="tickets-container">
-      <h2>All Tickets</h2>
-      <ul>
+      <div>
+      {/* <h2>All Tickets</h2> */}
+      <ul className="tickets-container">
         {tickets.length ? (
           tickets.map((ticket) => (
             <li key={ticket.id} className="all-tickets-details">
-              <h2>{ticket.userID}</h2>
+              <h2>Ticket #{ticket.id}</h2>
               <p>{ticket.content}</p>
               <button onClick={() => navigate(`/admin/tickets/${ticket.id}`)}>
                 Show Details

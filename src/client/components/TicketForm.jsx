@@ -8,7 +8,7 @@ function TicketForm(props) {
 
   const [userID, setUserID] = useState(props.user.id)
   const [content, setContent] = useState("");
-  const [ticketStatus, setTicketStatus] = useState("not yet reviewed")
+  const [ticketStatus, setTicketStatus] = useState("Not Yet Reviewed")
   const [ticketDate, setTicketDate] = useState("");
 
   const [successMessage, setSuccessMessage] = useState("");

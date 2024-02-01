@@ -24,9 +24,9 @@ function AllUsers(props) {
   }
 
   return (
-    <div className="admin-container">
+    <div >
       <h2>Registered Users</h2>
-      <ul>
+      <ul className="users-container">
         {users?.map((user) => {
           return (
             <li>

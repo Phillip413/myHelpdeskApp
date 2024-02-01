@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function HomePage(props){
 
@@ -8,9 +9,9 @@ function HomePage(props){
   }, []);
 
   return (
-    <div>
+    <div className="homepage-container">
       <h2>Welcome to the Help Center</h2>
-      <p>Please Login to submit a ticket</p>
+      <p>Please <Link to="/login">Login</Link> to submit a ticket</p>
 
 
 

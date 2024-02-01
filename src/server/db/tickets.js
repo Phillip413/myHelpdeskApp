@@ -65,7 +65,7 @@ async function updateTicket(id, {ticketStatus}) {
     const { rows: updatedTicket } = await client.query(
       `
       UPDATE tickets
-      SET ticketstatus = $3
+      SET ticketstatus = $2
       WHERE id = $1
       RETURNING *
       `,
