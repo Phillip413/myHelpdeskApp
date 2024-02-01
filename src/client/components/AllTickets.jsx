@@ -1,51 +1,53 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function AllTickets({ tickets, setTickets }) {
+let API = "http://localhost:3000/api/";
+
+function AllTickets(props) {
+  const [tickets, setTickets] = useState([]);
   const navigate = useNavigate();
-  const [originalTickets, setOriginalTickets] = useState([]);
 
   useEffect(() => {
     fetchTickets();
   }, []);
 
   async function fetchTickets() {
-    let API = "http://localhost:3000/api/tickets";
-
     try {
-      const { data: response } = await axios.get(`${API}`);
-      setTickets(response);
-      setOriginalTickets(response);
-    } catch (err) {
-      console.error(err.message);
+      const { data: json } = await axios.get(`${API}/tickets`, {
+        headers: {
+          Authorization: `Bearer ${props?.token}`,
+        },
+      });
+      setTickets(json);
+    } catch (error) {
+      console.error("Unable to find tickets: ", error.message);
     }
   }
 
-  const handleShowAll = () => {
-    fetchTickets();
-  };
-
   return (
     <div>
-
-        <ul className="tickets-container">
-          {tickets.length ? (
-            tickets.map((ticket) => (
-              <li key={ticket.id} className="all-tickets-details">
-                <h2>{ticket.userID}</h2>
-                <p>{ticket.content}</p>
-                <button onClick={() => navigate(`/tickets/${ticket.id}`)}>
-                  Show Details
-                </button>
-              </li>
-            ))
+      <div className="tickets-container">
+      <h2>All Tickets</h2>
+      <ul>
+        {tickets.length ? (
+          tickets.map((ticket) => (
+            <li key={ticket.id} className="all-tickets-details">
+              <h2>{ticket.userID}</h2>
+              <p>{ticket.content}</p>
+              <button onClick={() => navigate(`/admin/tickets/${ticket.id}`)}>
+                Show Details
+              </button>
+            </li>
+          ))
           ) : (
             <h2>Loading ...</h2>
-          )}
-        </ul>
+          )
+        }
+      </ul>
+      </div>
     </div>
   );
 }
 
-export default AllAlbums;
+export default AllTickets;

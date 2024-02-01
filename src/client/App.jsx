@@ -5,7 +5,12 @@ import HomePage from "./components/HomePage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import TicketForm from "./components/TicketForm";
-// import AllTickets from "./components/AllTickets";
+import AllTickets from "./components/AllTickets";
+import AllUsers from "./components/AllUsers";
+import AdminFooter from "./components/AdminFooter";
+import SingleTicket from "./components/SingleTicket";
+
+
 
 import axios from "axios";
 
@@ -57,7 +62,7 @@ function App() {
             Login
           </Link>
 
-          {token ? 
+          {token && !isAdmin ? 
             <Link to="/ticketForm" className="nav-link">
               Submit Ticket
             </Link> 
@@ -67,13 +72,18 @@ function App() {
           
         </nav>
       </header>
-      {/* {isAdmin() ? <AdminFooter token={token} user={user} /> : <></>} */}
+      {isAdmin() ? <AdminFooter token={token} user={user} /> : <></>}
 
       <Routes>
         <Route path="/ticketForm" element={<TicketForm token={token} setToken={setToken} user={user} setUser={setUser}/>}></Route>
         <Route path="/" element={<HomePage token={token} setToken={setToken} user={user}/>}></Route>
         <Route path="/login" element={<Login token={token} setToken={setToken} user={user}/>}></Route>
         <Route path="/register" element={<Register token={token} setToken={setToken} user={user}/>}></Route>
+
+        <Route path="/admin/tickets" element={<AllTickets token={token} user={user}/>}></Route>
+        <Route path="/admin/users" element={<AllUsers token={token} user={user} />}></Route>
+        <Route path="/admin/tickets/:id" element={<SingleTicket token={token} />} />
+
       </Routes>
     </div>
   );
